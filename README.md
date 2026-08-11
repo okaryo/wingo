@@ -4,9 +4,8 @@ Wingo is a keyboard-first window switcher for macOS.
 
 ## Current status
 
-Phase 3 is implemented. The development UI can request Accessibility permission, list and activate
-windows, and reopen from the global `Cmd + Ctrl + ↑` shortcut. The floating switcher panel and MRU
-ordering are planned for later phases.
+Phase 4 is implemented. `Cmd + Ctrl + ↑` opens a floating keyboard-controlled switcher panel that
+lists and activates windows. MRU ordering and direct number shortcuts are planned for later phases.
 
 ## Requirements
 
@@ -18,12 +17,11 @@ ordering are planned for later phases.
 1. Open `Wingo.xcodeproj` in Xcode.
 2. Select the `Wingo` scheme and run the app.
 3. Grant Accessibility permission when prompted.
-4. Return to Wingo or press `Cmd + R` in the app to refresh the window list.
-5. Select a window and click **Activate Window**, or double-click a window, to switch to it.
-6. Close or move away from Wingo, then press `Cmd + Ctrl + ↑` to reopen it globally.
+4. Move away from Wingo, then press `Cmd + Ctrl + ↑` to open the switcher globally.
+5. Use `↑` / `↓` to select a window, `Enter` to switch, or `Esc` to close the panel.
 
-Wingo currently keeps its Dock icon and a normal window to make early-phase development and
-verification easier.
+Wingo currently keeps its Dock icon to make early-phase development and verification easier. The
+switcher itself uses a titleless floating panel.
 
 ## Accessibility Permission
 
@@ -33,10 +31,10 @@ requires explicit user permission for this access. Enable Wingo under **System S
 
 ## Phase 2 manual verification
 
-After granting Accessibility permission, verify window activation with the development UI:
+After granting Accessibility permission, verify window activation with the switcher UI:
 
 1. Open multiple windows in the same application, such as VS Code, Chrome, Finder, or Terminal.
-2. Select each window in Wingo and click **Activate Window**; confirm the exact selected window is
+2. Select each window in Wingo and press `Enter`; confirm the exact selected window is
    raised and focused rather than only activating its application.
 3. Minimize a target window and activate it from Wingo; confirm it is restored and focused.
 4. Close a window after refreshing Wingo, then try to activate the stale entry; confirm Wingo shows
@@ -46,12 +44,22 @@ After granting Accessibility permission, verify window activation with the devel
 
 ## Phase 3 manual verification
 
-1. Launch Wingo, then close its development window without quitting the application.
+1. Launch Wingo, then dismiss its panel with `Esc` without quitting the application.
 2. Focus another application and press `Cmd + Ctrl + ↑`.
 3. Confirm Wingo reappears, becomes ready for input, and refreshes its window list.
 4. Repeat the shortcut from several applications and after closing or opening target windows.
 5. If another application already owns the shortcut, confirm Wingo shows a registration error
    instead of silently failing.
+
+## Phase 4 manual verification
+
+1. Press `Cmd + Ctrl + ↑` and confirm a titleless floating panel appears near the center of the
+   display containing the mouse pointer.
+2. Confirm the first window is selected when the panel opens.
+3. Use `↑` and `↓` to move the selection, including wrapping at both ends of the list.
+4. Press `Enter` and confirm the panel disappears before the selected window receives focus.
+5. Press `Esc` and confirm the panel disappears without switching windows.
+6. Confirm long window titles stay on one line and the panel follows Light and Dark appearances.
 
 ## Privacy
 
@@ -60,7 +68,6 @@ outside the Mac.
 
 ## Current limitations
 
-- The Phase 3 UI is a development window, not the final floating switcher panel.
-- Some applications expose incomplete or unusual window information through the Accessibility API.
 - Window ordering is not MRU-based yet.
+- Some applications expose incomplete or unusual window information through the Accessibility API.
 - Wingo is not yet packaged as a signed or notarized DMG.

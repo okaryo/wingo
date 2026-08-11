@@ -14,12 +14,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         globalShortcutService = shortcutService
 
-        windowController.show()
-
         do {
             try shortcutService.start()
         } catch {
+            windowController.show()
             showShortcutRegistrationError(error, on: windowController.window)
+            return
+        }
+
+        if !AccessibilityService.isTrusted(promptIfNeeded: false) {
+            windowController.show()
         }
     }
 
