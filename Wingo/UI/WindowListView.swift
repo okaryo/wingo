@@ -2,11 +2,23 @@ import SwiftUI
 
 struct WindowListView: View {
     @Environment(\.scenePhase) private var scenePhase
-    @StateObject private var viewModel = WindowListViewModel()
+    @StateObject private var viewModel: WindowListViewModel
     @FocusState private var hasKeyboardFocus: Bool
 
     let onDismiss: () -> Void
     let onActivationFailure: () -> Void
+
+    init(
+        windowHistory: WindowHistory,
+        onDismiss: @escaping () -> Void,
+        onActivationFailure: @escaping () -> Void
+    ) {
+        _viewModel = StateObject(
+            wrappedValue: WindowListViewModel(windowHistory: windowHistory)
+        )
+        self.onDismiss = onDismiss
+        self.onActivationFailure = onActivationFailure
+    }
 
     var body: some View {
         Group {

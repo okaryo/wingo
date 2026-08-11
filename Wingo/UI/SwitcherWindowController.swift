@@ -8,8 +8,9 @@ extension Notification.Name {
 @MainActor
 final class SwitcherWindowController {
     let window: SwitcherPanel
+    private let beforeShow: () -> Void
 
-    init() {
+    init(windowHistory: WindowHistory, beforeShow: @escaping () -> Void) {
         let window = SwitcherPanel(
             contentRect: NSRect(x: 0, y: 0, width: 640, height: 480),
             styleMask: [.borderless, .nonactivatingPanel],
@@ -18,6 +19,7 @@ final class SwitcherWindowController {
         )
         let hostingController = NSHostingController(
             rootView: WindowListView(
+                windowHistory: windowHistory,
                 onDismiss: { [weak window] in
                     window?.orderOut(nil)
                 },
@@ -41,9 +43,11 @@ final class SwitcherWindowController {
         window.hidesOnDeactivate = true
         window.isReleasedWhenClosed = false
         self.window = window
+        self.beforeShow = beforeShow
     }
 
     func show() {
+        beforeShow()
         positionOnActiveScreen()
         NotificationCenter.default.post(name: .wingoSwitcherWillShow, object: nil)
         NSApp.activate()

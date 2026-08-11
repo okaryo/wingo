@@ -4,6 +4,16 @@ import ApplicationServices
 struct WindowIdentifier: Hashable {
     let processIdentifier: pid_t
     let accessibilityElementHash: CFHashCode
+
+    init(processIdentifier: pid_t, accessibilityElement: AXUIElement) {
+        self.processIdentifier = processIdentifier
+        accessibilityElementHash = CFHash(accessibilityElement)
+    }
+
+    init(processIdentifier: pid_t, accessibilityElementHash: CFHashCode) {
+        self.processIdentifier = processIdentifier
+        self.accessibilityElementHash = accessibilityElementHash
+    }
 }
 
 final class AccessibilityWindowReference {

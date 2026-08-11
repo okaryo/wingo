@@ -17,6 +17,11 @@
 		A10000000000000000000008 /* GlobalShortcutService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* GlobalShortcutService.swift */; };
 		A10000000000000000000009 /* SwitcherWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000009 /* SwitcherWindowController.swift */; };
 		A1000000000000000000000A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000A /* AppDelegate.swift */; };
+		A1000000000000000000000B /* WindowHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000B /* WindowHistory.swift */; };
+		A1000000000000000000000C /* WindowFocusObserverService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000C /* WindowFocusObserverService.swift */; };
+		B10000000000000000000001 /* WindowHistoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* WindowHistoryTests.swift */; };
+		B10000000000000000000002 /* WindowHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000B /* WindowHistory.swift */; };
+		B10000000000000000000003 /* WindowItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* WindowItem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,10 +36,21 @@
 		A20000000000000000000008 /* GlobalShortcutService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalShortcutService.swift; sourceTree = "<group>"; };
 		A20000000000000000000009 /* SwitcherWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitcherWindowController.swift; sourceTree = "<group>"; };
 		A2000000000000000000000A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A2000000000000000000000B /* WindowHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowHistory.swift; sourceTree = "<group>"; };
+		A2000000000000000000000C /* WindowFocusObserverService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowFocusObserverService.swift; sourceTree = "<group>"; };
+		B20000000000000000000000 /* WingoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WingoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B20000000000000000000001 /* WindowHistoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowHistoryTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A30000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B30000000000000000000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -48,6 +64,7 @@
 			isa = PBXGroup;
 			children = (
 				A40000000000000000000001 /* Wingo */,
+				B40000000000000000000001 /* WingoTests */,
 				A40000000000000000000005 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -78,6 +95,8 @@
 				A20000000000000000000003 /* AccessibilityService.swift */,
 				A20000000000000000000008 /* GlobalShortcutService.swift */,
 				A20000000000000000000007 /* WindowActivationService.swift */,
+				A2000000000000000000000C /* WindowFocusObserverService.swift */,
+				A2000000000000000000000B /* WindowHistory.swift */,
 				A20000000000000000000004 /* WindowService.swift */,
 			);
 			path = Services;
@@ -97,8 +116,17 @@
 			isa = PBXGroup;
 			children = (
 				A20000000000000000000000 /* Wingo.app */,
+				B20000000000000000000000 /* WingoTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B40000000000000000000001 /* WingoTests */ = {
+			isa = PBXGroup;
+			children = (
+				B20000000000000000000001 /* WindowHistoryTests.swift */,
+			);
+			path = WingoTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -123,6 +151,25 @@
 			productReference = A20000000000000000000000 /* Wingo.app */;
 			productType = "com.apple.product-type.application";
 		};
+		B50000000000000000000000 /* WingoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B90000000000000000000001 /* Build configuration list for PBXNativeTarget "WingoTests" */;
+			buildPhases = (
+				B70000000000000000000001 /* Sources */,
+				B30000000000000000000001 /* Frameworks */,
+				B80000000000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WingoTests;
+			packageProductDependencies = (
+			);
+			productName = WingoTests;
+			productReference = B20000000000000000000000 /* WingoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -134,6 +181,9 @@
 				LastUpgradeCheck = 2660;
 				TargetAttributes = {
 					A50000000000000000000000 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					B50000000000000000000000 = {
 						CreatedOnToolsVersion = 26.6;
 					};
 				};
@@ -153,12 +203,20 @@
 			projectRoot = "";
 			targets = (
 				A50000000000000000000000 /* Wingo */,
+				B50000000000000000000000 /* WingoTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		A80000000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B80000000000000000000001 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -182,6 +240,18 @@
 				A10000000000000000000008 /* GlobalShortcutService.swift in Sources */,
 				A10000000000000000000009 /* SwitcherWindowController.swift in Sources */,
 				A1000000000000000000000A /* AppDelegate.swift in Sources */,
+				A1000000000000000000000B /* WindowHistory.swift in Sources */,
+				A1000000000000000000000C /* WindowFocusObserverService.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B70000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B10000000000000000000001 /* WindowHistoryTests.swift in Sources */,
+				B10000000000000000000002 /* WindowHistory.swift in Sources */,
+				B10000000000000000000003 /* WindowItem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,6 +343,32 @@
 			};
 			name = Release;
 		};
+		BB0000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_BUNDLE_IDENTIFIER = studio.okaryo.wingoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		BB0000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_BUNDLE_IDENTIFIER = studio.okaryo.wingoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -290,6 +386,15 @@
 			buildConfigurations = (
 				AA0000000000000000000003 /* Debug */,
 				AA0000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B90000000000000000000001 /* Build configuration list for PBXNativeTarget "WingoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB0000000000000000000001 /* Debug */,
+				BB0000000000000000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

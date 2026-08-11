@@ -4,9 +4,20 @@ import AppKit
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var switcherWindowController: SwitcherWindowController?
     private var globalShortcutService: GlobalShortcutService?
+    private var windowFocusObserverService: WindowFocusObserverService?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        let windowController = SwitcherWindowController()
+        let windowHistory = WindowHistory()
+        let focusObserverService = WindowFocusObserverService(history: windowHistory)
+        windowFocusObserverService = focusObserverService
+        focusObserverService.startOrRefresh()
+
+        let windowController = SwitcherWindowController(
+            windowHistory: windowHistory,
+            beforeShow: { [weak focusObserverService] in
+                focusObserverService?.startOrRefresh()
+            }
+        )
         switcherWindowController = windowController
 
         let shortcutService = GlobalShortcutService { [weak windowController] in
@@ -29,6 +40,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         globalShortcutService?.stop()
+        windowFocusObserverService?.stop()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {

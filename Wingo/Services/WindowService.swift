@@ -37,7 +37,7 @@ enum WindowService {
                 let title = displayTitle(rawTitle, applicationName: applicationName)
                 let identifier = WindowIdentifier(
                     processIdentifier: application.processIdentifier,
-                    accessibilityElementHash: CFHash(windowElement)
+                    accessibilityElement: windowElement
                 )
 
                 windows.append(

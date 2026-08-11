@@ -24,6 +24,11 @@ final class WindowListViewModel: ObservableObject {
     @Published private(set) var inaccessibleApplicationCount = 0
     @Published var selectedWindowID: WindowIdentifier?
     @Published var activationAlert: ActivationAlert?
+    private let windowHistory: WindowHistory
+
+    init(windowHistory: WindowHistory) {
+        self.windowHistory = windowHistory
+    }
 
     func load(promptForPermission: Bool = false, resetSelection: Bool = false) {
         guard AccessibilityService.isTrusted(promptIfNeeded: promptForPermission) else {
@@ -35,7 +40,7 @@ final class WindowListViewModel: ObservableObject {
 
         state = .loading
         let result = WindowService.discoverWindows()
-        windows = result.windows
+        windows = windowHistory.orderedWindows(result.windows)
         inspectedApplicationCount = result.inspectedApplicationCount
         inaccessibleApplicationCount = result.inaccessibleApplicationCount
         if !resetSelection,
@@ -43,7 +48,7 @@ final class WindowListViewModel: ObservableObject {
            windows.contains(where: { $0.id == selectedWindowID }) {
             self.selectedWindowID = selectedWindowID
         } else {
-            selectedWindowID = windows.first?.id
+            selectedWindowID = windowHistory.initialSelection(in: windows)
         }
         state = .loaded
     }
@@ -96,6 +101,7 @@ final class WindowListViewModel: ObservableObject {
     func activate(_ window: WindowItem) -> Bool {
         switch WindowActivationService.activate(window) {
         case .success:
+            windowHistory.recordFocusedWindow(window.id)
             return true
         case let .failure(error):
             activationAlert = ActivationAlert(

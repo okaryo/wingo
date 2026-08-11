@@ -4,8 +4,8 @@ Wingo is a keyboard-first window switcher for macOS.
 
 ## Current status
 
-Phase 4 is implemented. `Cmd + Ctrl + ↑` opens a floating keyboard-controlled switcher panel that
-lists and activates windows. MRU ordering and direct number shortcuts are planned for later phases.
+Phase 5 is implemented. `Cmd + Ctrl + ↑` opens a floating keyboard-controlled switcher panel with
+in-memory MRU ordering. Direct number shortcuts are planned for a later phase.
 
 ## Requirements
 
@@ -22,6 +22,9 @@ lists and activates windows. MRU ordering and direct number shortcuts are planne
 
 Wingo currently keeps its Dock icon to make early-phase development and verification easier. The
 switcher itself uses a titleless floating panel.
+
+Run the `WingoTests` tests with **Product → Test** in Xcode. These tests cover in-memory MRU
+ordering, fallback ordering, and initial selection behavior.
 
 ## Accessibility Permission
 
@@ -61,6 +64,16 @@ After granting Accessibility permission, verify window activation with the switc
 5. Press `Esc` and confirm the panel disappears without switching windows.
 6. Confirm long window titles stay on one line and the panel follows Light and Dark appearances.
 
+## Phase 5 manual verification
+
+1. Focus three or more windows in a known order, including multiple windows from the same app.
+2. Open Wingo and confirm the most recently focused windows appear first.
+3. Confirm the currently focused window remains listed, but the previous different window is
+   initially selected so `Cmd + Ctrl + ↑`, then `Enter`, returns to it.
+4. Switch back and forth using Wingo and confirm the MRU order updates each time.
+5. Open or close windows and confirm untracked windows use a stable fallback order without crashes.
+6. Quit and relaunch Wingo and confirm it starts safely with a fresh in-memory history.
+
 ## Privacy
 
 Wingo does not perform network communication or send window information, titles, or usage data
@@ -68,6 +81,6 @@ outside the Mac.
 
 ## Current limitations
 
-- Window ordering is not MRU-based yet.
+- MRU history is kept in memory and resets when Wingo quits.
 - Some applications expose incomplete or unusual window information through the Accessibility API.
 - Wingo is not yet packaged as a signed or notarized DMG.
