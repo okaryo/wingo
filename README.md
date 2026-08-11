@@ -4,9 +4,9 @@ Wingo is a keyboard-first window switcher for macOS.
 
 ## Current status
 
-Phase 2 is implemented. The development UI can request Accessibility permission, list the
-currently open windows, and activate a selected window. The global shortcut, switcher panel, and
-MRU ordering are planned for later phases.
+Phase 3 is implemented. The development UI can request Accessibility permission, list and activate
+windows, and reopen from the global `Cmd + Ctrl + ↑` shortcut. The floating switcher panel and MRU
+ordering are planned for later phases.
 
 ## Requirements
 
@@ -20,6 +20,7 @@ MRU ordering are planned for later phases.
 3. Grant Accessibility permission when prompted.
 4. Return to Wingo or press `Cmd + R` in the app to refresh the window list.
 5. Select a window and click **Activate Window**, or double-click a window, to switch to it.
+6. Close or move away from Wingo, then press `Cmd + Ctrl + ↑` to reopen it globally.
 
 Wingo currently keeps its Dock icon and a normal window to make early-phase development and
 verification easier.
@@ -43,6 +44,15 @@ After granting Accessibility permission, verify window activation with the devel
 5. Quit a target application after refreshing Wingo and confirm activating its stale entry is
    handled safely.
 
+## Phase 3 manual verification
+
+1. Launch Wingo, then close its development window without quitting the application.
+2. Focus another application and press `Cmd + Ctrl + ↑`.
+3. Confirm Wingo reappears, becomes ready for input, and refreshes its window list.
+4. Repeat the shortcut from several applications and after closing or opening target windows.
+5. If another application already owns the shortcut, confirm Wingo shows a registration error
+   instead of silently failing.
+
 ## Privacy
 
 Wingo does not perform network communication or send window information, titles, or usage data
@@ -50,7 +60,7 @@ outside the Mac.
 
 ## Current limitations
 
-- The Phase 2 UI is a development interface, not the final floating switcher panel.
+- The Phase 3 UI is a development window, not the final floating switcher panel.
 - Some applications expose incomplete or unusual window information through the Accessibility API.
 - Window ordering is not MRU-based yet.
 - Wingo is not yet packaged as a signed or notarized DMG.

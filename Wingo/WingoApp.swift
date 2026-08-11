@@ -2,12 +2,11 @@ import SwiftUI
 
 @main
 struct WingoApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
     var body: some Scene {
-        WindowGroup {
-            WindowListView()
-                .frame(minWidth: 560, minHeight: 420)
+        Settings {
+            EmptyView()
         }
-        .defaultSize(width: 680, height: 560)
-        .windowResizability(.contentMinSize)
     }
 }

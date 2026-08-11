@@ -16,9 +16,11 @@ struct WindowListView: View {
                 windowList
             }
         }
-        .navigationTitle("Wingo — Phase 2")
         .task {
             viewModel.load(promptForPermission: true)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .wingoSwitcherWillShow)) { _ in
+            viewModel.load()
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
