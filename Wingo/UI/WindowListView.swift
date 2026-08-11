@@ -72,6 +72,18 @@ struct WindowListView: View {
             onDismiss()
             return .handled
         }
+        .onKeyPress(phases: .down) { keyPress in
+            guard
+                keyPress.modifiers.contains(.command),
+                let shortcutNumber = Int(keyPress.characters),
+                viewModel.selectWindow(forShortcutNumber: shortcutNumber)
+            else {
+                return .ignored
+            }
+
+            activateSelectedWindow()
+            return .handled
+        }
         .alert(item: $viewModel.activationAlert) { alert in
             Alert(
                 title: Text("Couldn’t Switch Window"),
@@ -114,8 +126,14 @@ struct WindowListView: View {
                 ScrollViewReader { proxy in
                     ScrollView {
                         LazyVStack(spacing: 4) {
-                            ForEach(viewModel.windows) { window in
-                                windowRow(window)
+                            ForEach(
+                                Array(viewModel.windows.enumerated()),
+                                id: \.element.id
+                            ) { index, window in
+                                windowRow(
+                                    window,
+                                    shortcutNumber: WindowShortcut.number(forListIndex: index)
+                                )
                                     .id(window.id)
                             }
                         }
@@ -135,7 +153,7 @@ struct WindowListView: View {
         }
     }
 
-    private func windowRow(_ window: WindowItem) -> some View {
+    private func windowRow(_ window: WindowItem, shortcutNumber: Int?) -> some View {
         let isSelected = viewModel.selectedWindowID == window.id
 
         return HStack(spacing: 12) {
@@ -154,6 +172,13 @@ struct WindowListView: View {
             }
 
             Spacer(minLength: 0)
+
+            if let shortcutNumber {
+                Text("⌘\(shortcutNumber)")
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(isSelected ? Color.white.opacity(0.8) : Color.secondary)
+                    .accessibilityLabel("Command \(shortcutNumber)")
+            }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)

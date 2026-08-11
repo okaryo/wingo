@@ -19,9 +19,12 @@
 		A1000000000000000000000A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000A /* AppDelegate.swift */; };
 		A1000000000000000000000B /* WindowHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000B /* WindowHistory.swift */; };
 		A1000000000000000000000C /* WindowFocusObserverService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000C /* WindowFocusObserverService.swift */; };
+		A1000000000000000000000D /* WindowShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000D /* WindowShortcut.swift */; };
 		B10000000000000000000001 /* WindowHistoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* WindowHistoryTests.swift */; };
 		B10000000000000000000002 /* WindowHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000B /* WindowHistory.swift */; };
 		B10000000000000000000003 /* WindowItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* WindowItem.swift */; };
+		B10000000000000000000004 /* WindowShortcutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000002 /* WindowShortcutTests.swift */; };
+		B10000000000000000000005 /* WindowShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000D /* WindowShortcut.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,8 +41,10 @@
 		A2000000000000000000000A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A2000000000000000000000B /* WindowHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowHistory.swift; sourceTree = "<group>"; };
 		A2000000000000000000000C /* WindowFocusObserverService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowFocusObserverService.swift; sourceTree = "<group>"; };
+		A2000000000000000000000D /* WindowShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowShortcut.swift; sourceTree = "<group>"; };
 		B20000000000000000000000 /* WingoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WingoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B20000000000000000000001 /* WindowHistoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowHistoryTests.swift; sourceTree = "<group>"; };
+		B20000000000000000000002 /* WindowShortcutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowShortcutTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +90,7 @@
 			isa = PBXGroup;
 			children = (
 				A20000000000000000000002 /* WindowItem.swift */,
+				A2000000000000000000000D /* WindowShortcut.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -125,6 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				B20000000000000000000001 /* WindowHistoryTests.swift */,
+				B20000000000000000000002 /* WindowShortcutTests.swift */,
 			);
 			path = WingoTests;
 			sourceTree = "<group>";
@@ -242,6 +249,7 @@
 				A1000000000000000000000A /* AppDelegate.swift in Sources */,
 				A1000000000000000000000B /* WindowHistory.swift in Sources */,
 				A1000000000000000000000C /* WindowFocusObserverService.swift in Sources */,
+				A1000000000000000000000D /* WindowShortcut.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,6 +260,8 @@
 				B10000000000000000000001 /* WindowHistoryTests.swift in Sources */,
 				B10000000000000000000002 /* WindowHistory.swift in Sources */,
 				B10000000000000000000003 /* WindowItem.swift in Sources */,
+				B10000000000000000000004 /* WindowShortcutTests.swift in Sources */,
+				B10000000000000000000005 /* WindowShortcut.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

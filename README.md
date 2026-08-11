@@ -4,8 +4,9 @@ Wingo is a keyboard-first window switcher for macOS.
 
 ## Current status
 
-Phase 5 is implemented. `Cmd + Ctrl + ↑` opens a floating keyboard-controlled switcher panel with
-in-memory MRU ordering. Direct number shortcuts are planned for a later phase.
+Phase 6 is implemented. `Cmd + Ctrl + ↑` opens a floating keyboard-controlled switcher panel with
+in-memory MRU ordering, and `Cmd + 1` through `Cmd + 9` switch directly to the corresponding
+visible window.
 
 ## Requirements
 
@@ -18,13 +19,14 @@ in-memory MRU ordering. Direct number shortcuts are planned for a later phase.
 2. Select the `Wingo` scheme and run the app.
 3. Grant Accessibility permission when prompted.
 4. Move away from Wingo, then press `Cmd + Ctrl + ↑` to open the switcher globally.
-5. Use `↑` / `↓` to select a window, `Enter` to switch, or `Esc` to close the panel.
+5. Use `↑` / `↓` to select a window, `Enter` to switch, `Cmd + 1...9` to switch directly, or `Esc`
+   to close the panel.
 
 Wingo currently keeps its Dock icon to make early-phase development and verification easier. The
 switcher itself uses a titleless floating panel.
 
 Run the `WingoTests` tests with **Product → Test** in Xcode. These tests cover in-memory MRU
-ordering, fallback ordering, and initial selection behavior.
+ordering, fallback ordering, initial selection behavior, and direct-shortcut index mapping.
 
 ## Accessibility Permission
 
@@ -73,6 +75,17 @@ After granting Accessibility permission, verify window activation with the switc
 4. Switch back and forth using Wingo and confirm the MRU order updates each time.
 5. Open or close windows and confirm untracked windows use a stable fallback order without crashes.
 6. Quit and relaunch Wingo and confirm it starts safely with a fresh in-memory history.
+
+## Phase 6 manual verification
+
+1. Open at least ten windows, then open Wingo and confirm only the first nine rows show shortcut
+   labels from `⌘1` through `⌘9`.
+2. Press each available `Cmd + 1...9` shortcut and confirm Wingo closes before switching directly
+   to the window on the corresponding row.
+3. Open Wingo with fewer than nine windows and press a number without a corresponding row; confirm
+   the panel stays open and no window is switched.
+4. Change the MRU order by focusing different windows, reopen Wingo, and confirm the number
+   shortcuts follow the newly displayed order.
 
 ## Privacy
 

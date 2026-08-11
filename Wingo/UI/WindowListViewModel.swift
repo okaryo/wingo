@@ -86,6 +86,16 @@ final class WindowListViewModel: ObservableObject {
     }
 
     @discardableResult
+    func selectWindow(forShortcutNumber number: Int) -> Bool {
+        guard let index = WindowShortcut.listIndex(for: number, windowCount: windows.count) else {
+            return false
+        }
+
+        selectedWindowID = windows[index].id
+        return true
+    }
+
+    @discardableResult
     func activateSelectedWindow() -> Bool {
         guard
             let selectedWindowID,
