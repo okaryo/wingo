@@ -16,7 +16,7 @@ struct WindowListView: View {
                 windowList
             }
         }
-        .navigationTitle("Wingo — Phase 1")
+        .navigationTitle("Wingo — Phase 2")
         .task {
             viewModel.load(promptForPermission: true)
         }
@@ -24,6 +24,13 @@ struct WindowListView: View {
             if newPhase == .active {
                 viewModel.load()
             }
+        }
+        .alert(item: $viewModel.activationAlert) { alert in
+            Alert(
+                title: Text("Couldn’t Switch Window"),
+                message: Text(alert.message),
+                dismissButton: .default(Text("OK"))
+            )
         }
     }
 
@@ -57,7 +64,7 @@ struct WindowListView: View {
                     description: Text("Open a window in another application, then refresh the list.")
                 )
             } else {
-                List(viewModel.windows) { window in
+                List(viewModel.windows, selection: $viewModel.selectedWindowID) { window in
                     HStack(spacing: 12) {
                         applicationIcon(for: window)
 
@@ -75,6 +82,10 @@ struct WindowListView: View {
                         Spacer(minLength: 0)
                     }
                     .padding(.vertical, 3)
+                    .tag(window.id)
+                    .onTapGesture(count: 2) {
+                        viewModel.activate(window)
+                    }
                 }
             }
 
@@ -86,6 +97,11 @@ struct WindowListView: View {
                     .foregroundStyle(.secondary)
 
                 Spacer()
+
+                Button("Activate Window") {
+                    viewModel.activateSelectedWindow()
+                }
+                .disabled(viewModel.selectedWindowID == nil)
 
                 Button("Refresh") {
                     viewModel.load()
