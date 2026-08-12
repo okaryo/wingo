@@ -29,6 +29,13 @@ final class WindowHistory {
 
         return windows.enumerated()
             .sorted { left, right in
+                let leftIsCurrent = left.element.id == currentWindowIdentifier
+                let rightIsCurrent = right.element.id == currentWindowIdentifier
+
+                if leftIsCurrent != rightIsCurrent {
+                    return !leftIsCurrent
+                }
+
                 let leftRank = historyRanks[left.element.id]
                 let rightRank = historyRanks[right.element.id]
 
@@ -47,11 +54,6 @@ final class WindowHistory {
     }
 
     func initialSelection(in windows: [WindowItem]) -> WindowIdentifier? {
-        guard let currentWindowIdentifier else {
-            return windows.first?.id
-        }
-
-        return windows.first(where: { $0.id != currentWindowIdentifier })?.id
-            ?? windows.first?.id
+        windows.first?.id
     }
 }

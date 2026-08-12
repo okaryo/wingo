@@ -4,7 +4,7 @@ import XCTest
 
 @MainActor
 final class WindowListViewModelTests: XCTestCase {
-    func testBuildsApplicationTabsByMostRecentWindowWithCounts() {
+    func testBuildsApplicationTabsFromWindowOrderWithCounts() {
         let appAFirst = makeWindow(id: 1, application: 10, name: "App A")
         let appASecond = makeWindow(id: 2, application: 10, name: "App A")
         let appB = makeWindow(id: 3, application: 20, name: "App B")
@@ -18,9 +18,30 @@ final class WindowListViewModelTests: XCTestCase {
 
         viewModel.load(resetSelection: true)
 
-        XCTAssertEqual(viewModel.applicationTabs.map(\.applicationName), ["App B", "App A"])
-        XCTAssertEqual(viewModel.applicationTabs.map(\.windowCount), [1, 2])
+        XCTAssertEqual(viewModel.applicationTabs.map(\.applicationName), ["App A", "App B"])
+        XCTAssertEqual(viewModel.applicationTabs.map(\.windowCount), [2, 1])
         XCTAssertEqual(viewModel.allWindowCount, 3)
+    }
+
+    func testInitialSelectionAndShortcutsFollowOrderingWithCurrentWindowLast() {
+        let older = makeWindow(id: 1, application: 10, name: "App A")
+        let previous = makeWindow(id: 2, application: 20, name: "App B")
+        let current = makeWindow(id: 3, application: 30, name: "App C")
+        let history = WindowHistory()
+        history.recordFocusedWindow(older.id)
+        history.recordFocusedWindow(previous.id)
+        history.recordFocusedWindow(current.id)
+        let viewModel = makeViewModel(
+            windows: [older, previous, current],
+            history: history
+        )
+
+        viewModel.load(resetSelection: true)
+
+        XCTAssertEqual(viewModel.windows.map(\.id), [previous.id, older.id, current.id])
+        XCTAssertEqual(viewModel.selectedWindowID, previous.id)
+        XCTAssertTrue(viewModel.selectWindow(forShortcutNumber: 1))
+        XCTAssertEqual(viewModel.selectedWindowID, previous.id)
     }
 
     func testSelectingApplicationFiltersWindowsWithoutChangingTheirMRUOrder() {

@@ -1,14 +1,13 @@
 # Wingo
 
-Wingo is a keyboard-first window switcher for macOS. It shows windows from running applications
-in most-recently-used order so you can find and focus a specific window without reaching for the
-mouse.
+Wingo is a keyboard-first window switcher for macOS. It prioritizes recently used windows from
+running applications so you can find and focus a specific window without reaching for the mouse.
 
 ## Features
 
 - Open the switcher from anywhere with a global keyboard shortcut.
 - Switch directly to an individual window, including another window from the same application.
-- Keep windows in most-recently-used (MRU) order while Wingo is running.
+- Keep windows in MRU order while placing the currently focused window last.
 - Filter windows by application using tabs with window counts.
 - Navigate entirely with arrow keys or Vim-style `h`, `j`, `k`, and `l` keys.
 - Jump to one of the first nine visible windows with `Command + 1` through `Command + 9`.
@@ -53,9 +52,10 @@ currently visible, filtered list.
 
 ## How window ordering works
 
-Wingo observes focused-window changes while it is running and places the most recently focused
-windows first. When the switcher opens, it initially selects the previous window where possible,
-making it quick to alternate between two windows.
+Wingo observes focused-window changes while it is running and places windows in most-recently-used
+order, except that the currently focused window is placed last. When the switcher opens, the
+previous window is therefore first, initially selected, and assigned to `Command + 1`. Application
+tabs follow the same window ordering.
 
 MRU history is currently stored in memory and resets when Wingo quits. Windows that have not yet
 been observed retain their discovery order.

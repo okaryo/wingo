@@ -15,7 +15,7 @@ final class WindowHistoryTests: XCTestCase {
 
         XCTAssertEqual(
             history.orderedWindows([first, second, third]).map(\.id),
-            [third.id, second.id, first.id]
+            [second.id, first.id, third.id]
         )
     }
 
@@ -26,7 +26,7 @@ final class WindowHistoryTests: XCTestCase {
         XCTAssertEqual(history.orderedWindows(windows).map(\.id), windows.map(\.id))
     }
 
-    func testInitiallySelectsPreviousWindowInsteadOfCurrentWindow() {
+    func testPlacesCurrentWindowLastAndInitiallySelectsPreviousWindow() {
         let previous = makeWindow(1)
         let current = makeWindow(2)
         let other = makeWindow(3)
@@ -36,7 +36,7 @@ final class WindowHistoryTests: XCTestCase {
         history.recordFocusedWindow(current.id)
         let orderedWindows = history.orderedWindows([previous, current, other])
 
-        XCTAssertEqual(orderedWindows.first?.id, current.id)
+        XCTAssertEqual(orderedWindows.map(\.id), [previous.id, other.id, current.id])
         XCTAssertEqual(history.initialSelection(in: orderedWindows), previous.id)
     }
 
