@@ -39,6 +39,20 @@ final class WindowListViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.windows.map(\.id), [newer.id, older.id])
     }
 
+    func testSelectingApplicationResetsWindowSelectionToFirstVisibleWindow() {
+        let appAFirst = makeWindow(id: 1, application: 10, name: "App A")
+        let appB = makeWindow(id: 2, application: 20, name: "App B")
+        let appASecond = makeWindow(id: 3, application: 10, name: "App A")
+        let viewModel = makeViewModel(windows: [appAFirst, appB, appASecond])
+        viewModel.load(resetSelection: true)
+        viewModel.selectedWindowID = appASecond.id
+
+        viewModel.selectApplication(.application(appAFirst.applicationIdentifier))
+
+        XCTAssertEqual(viewModel.windows.map(\.id), [appAFirst.id, appASecond.id])
+        XCTAssertEqual(viewModel.selectedWindowID, appAFirst.id)
+    }
+
     func testApplicationSelectionWrapsAcrossAllAndApplicationTabs() {
         let appA = makeWindow(id: 1, application: 10, name: "App A")
         let appB = makeWindow(id: 2, application: 20, name: "App B")

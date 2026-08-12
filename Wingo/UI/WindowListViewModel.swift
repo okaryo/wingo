@@ -102,8 +102,14 @@ final class WindowListViewModel: ObservableObject {
             return
         }
 
+        let isChangingApplication = selection != selectedApplication
         selectedApplication = selection
         updateVisibleWindows()
+
+        if isChangingApplication {
+            selectedWindowID = windows.first?.id
+            return
+        }
 
         if let selectedWindowID,
            windows.contains(where: { $0.id == selectedWindowID }) {
