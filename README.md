@@ -4,9 +4,9 @@ Wingo is a keyboard-first window switcher for macOS.
 
 ## Current status
 
-Phase 6 is implemented. `Cmd + Ctrl + ↑` opens a floating keyboard-controlled switcher panel with
-in-memory MRU ordering, and `Cmd + 1` through `Cmd + 9` switch directly to the corresponding
-visible window.
+The initial MVP through Phase 7 is implemented. `Cmd + Ctrl + ↑` opens a floating,
+keyboard-controlled switcher with in-memory MRU ordering. Windows from the same application are
+listed separately, and `Cmd + 1` through `Cmd + 9` switch directly to the corresponding row.
 
 ## Requirements
 
@@ -16,17 +16,37 @@ visible window.
 ## Development
 
 1. Open `Wingo.xcodeproj` in Xcode.
-2. Select the `Wingo` scheme and run the app.
-3. Grant Accessibility permission when prompted.
-4. Move away from Wingo, then press `Cmd + Ctrl + ↑` to open the switcher globally.
-5. Use `↑` / `↓` to select a window, `Enter` to switch, `Cmd + 1...9` to switch directly, or `Esc`
-   to close the panel.
+2. Confirm the Wingo target has a valid development team selected under **Signing & Capabilities**.
+3. Select the `Wingo` scheme and run the app.
+4. Grant Accessibility permission when prompted.
+5. Move away from Wingo, then press `Cmd + Ctrl + ↑` to open the switcher globally.
 
-Wingo currently keeps its Dock icon to make early-phase development and verification easier. The
-switcher itself uses a titleless floating panel.
+If Wingo was previously run with a different or ad-hoc signature and its Accessibility toggle
+keeps returning to off, remove only Wingo's stale permission record before requesting access again:
+
+```sh
+tccutil reset Accessibility studio.okaryo.wingo
+```
+
+Do not run a broad `tccutil reset Accessibility`; that would remove other applications' approvals.
+
+## Usage
+
+```text
+Cmd + Ctrl + ↑  Open Wingo
+↑ / ↓           Move selection
+Enter           Switch to the selected window
+Esc             Close and return to the previous application
+Cmd + 1...9     Switch directly to rows 1 through 9
+```
+
+## Tests
 
 Run the `WingoTests` tests with **Product → Test** in Xcode. These tests cover in-memory MRU
 ordering, fallback ordering, initial selection behavior, and direct-shortcut index mapping.
+
+Wingo currently keeps its Dock icon to make development and verification easier. The switcher
+itself uses a titleless floating panel.
 
 ## Accessibility Permission
 
@@ -87,6 +107,22 @@ After granting Accessibility permission, verify window activation with the switc
 4. Change the MRU order by focusing different windows, reopen Wingo, and confirm the number
    shortcuts follow the newly displayed order.
 
+## Phase 7 verification results
+
+Verified on macOS 26.5 with a single built-in display:
+
+- The global shortcut reopens Wingo after it hides, and Accessibility approval survives a normal
+  rebuild when the app uses a stable Apple Development signature.
+- Chrome, ChatGPT, Finder, Slack, Xcode, Simulator, and multiple VS Code windows appear as separate
+  rows with application icons and window titles.
+- Separate VS Code and Chrome windows can be targeted individually with direct number shortcuts.
+- MRU order updates after a switch, while initial selection points to the previous window.
+- Arrow-key selection, `Enter`, `Esc`, and `Cmd + 1...9` work without requiring the mouse.
+- Closing a test Chrome window removes it from the next list refresh without crashing Wingo.
+- Permission denial displays an actionable explanation and links to System Settings.
+
+Multiple-display placement was not verified because the test Mac had only one active display.
+
 ## Privacy
 
 Wingo does not perform network communication or send window information, titles, or usage data
@@ -96,4 +132,6 @@ outside the Mac.
 
 - MRU history is kept in memory and resets when Wingo quits.
 - Some applications expose incomplete or unusual window information through the Accessibility API.
-- Wingo is not yet packaged as a signed or notarized DMG.
+- Multiple-display placement has not yet been verified on physical multi-display hardware.
+- The Dock icon remains visible in this development-oriented MVP.
+- Wingo is not yet packaged as a Developer ID-signed, notarized DMG.

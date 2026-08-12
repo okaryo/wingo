@@ -9,8 +9,10 @@ extension Notification.Name {
 final class SwitcherWindowController {
     let window: SwitcherPanel
     private let beforeShow: () -> Void
+    private let session: SwitcherSession
 
     init(windowHistory: WindowHistory, beforeShow: @escaping () -> Void) {
+        let session = SwitcherSession()
         let window = SwitcherPanel(
             contentRect: NSRect(x: 0, y: 0, width: 640, height: 480),
             styleMask: [.borderless, .nonactivatingPanel],
@@ -20,8 +22,15 @@ final class SwitcherWindowController {
         let hostingController = NSHostingController(
             rootView: WindowListView(
                 windowHistory: windowHistory,
-                onDismiss: { [weak window] in
+                onDismiss: { [weak window, weak session] in
                     window?.orderOut(nil)
+                    session?.restorePreviouslyActiveApplication()
+                },
+                onPrepareForActivation: { [weak window] in
+                    window?.orderOut(nil)
+                },
+                onActivationSuccess: { [weak session] in
+                    session?.discardPreviouslyActiveApplication()
                 },
                 onActivationFailure: { [weak window] in
                     guard let window else {
@@ -44,9 +53,11 @@ final class SwitcherWindowController {
         window.isReleasedWhenClosed = false
         self.window = window
         self.beforeShow = beforeShow
+        self.session = session
     }
 
     func show() {
+        session.rememberPreviouslyActiveApplication()
         beforeShow()
         positionOnActiveScreen()
         NotificationCenter.default.post(name: .wingoSwitcherWillShow, object: nil)
@@ -56,6 +67,7 @@ final class SwitcherWindowController {
 
     func hide() {
         window.orderOut(nil)
+        session.restorePreviouslyActiveApplication()
     }
 
     private func positionOnActiveScreen() {
@@ -72,6 +84,30 @@ final class SwitcherWindowController {
             y: visibleFrame.midY - windowSize.height / 2
         )
         window.setFrameOrigin(origin)
+    }
+}
+
+@MainActor
+private final class SwitcherSession {
+    private weak var previouslyActiveApplication: NSRunningApplication?
+
+    func rememberPreviouslyActiveApplication() {
+        guard let frontmostApplication = NSWorkspace.shared.frontmostApplication else {
+            return
+        }
+
+        if frontmostApplication.processIdentifier != ProcessInfo.processInfo.processIdentifier {
+            previouslyActiveApplication = frontmostApplication
+        }
+    }
+
+    func restorePreviouslyActiveApplication() {
+        previouslyActiveApplication?.activate()
+        previouslyActiveApplication = nil
+    }
+
+    func discardPreviouslyActiveApplication() {
+        previouslyActiveApplication = nil
     }
 }
 

@@ -6,17 +6,23 @@ struct WindowListView: View {
     @FocusState private var hasKeyboardFocus: Bool
 
     let onDismiss: () -> Void
+    let onPrepareForActivation: () -> Void
+    let onActivationSuccess: () -> Void
     let onActivationFailure: () -> Void
 
     init(
         windowHistory: WindowHistory,
         onDismiss: @escaping () -> Void,
+        onPrepareForActivation: @escaping () -> Void,
+        onActivationSuccess: @escaping () -> Void,
         onActivationFailure: @escaping () -> Void
     ) {
         _viewModel = StateObject(
             wrappedValue: WindowListViewModel(windowHistory: windowHistory)
         )
         self.onDismiss = onDismiss
+        self.onPrepareForActivation = onPrepareForActivation
+        self.onActivationSuccess = onActivationSuccess
         self.onActivationFailure = onActivationFailure
     }
 
@@ -213,8 +219,10 @@ struct WindowListView: View {
     }
 
     private func activateSelectedWindow() {
-        onDismiss()
-        if !viewModel.activateSelectedWindow() {
+        onPrepareForActivation()
+        if viewModel.activateSelectedWindow() {
+            onActivationSuccess()
+        } else {
             onActivationFailure()
         }
     }
