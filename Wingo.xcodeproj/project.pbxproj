@@ -20,6 +20,7 @@
 		A1000000000000000000000B /* WindowHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000B /* WindowHistory.swift */; };
 		A1000000000000000000000C /* WindowFocusObserverService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000C /* WindowFocusObserverService.swift */; };
 		A1000000000000000000000D /* WindowShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000D /* WindowShortcut.swift */; };
+		A1000000000000000000000E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000E /* Assets.xcassets */; };
 		B10000000000000000000001 /* WindowHistoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000001 /* WindowHistoryTests.swift */; };
 		B10000000000000000000002 /* WindowHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000B /* WindowHistory.swift */; };
 		B10000000000000000000003 /* WindowItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* WindowItem.swift */; };
@@ -42,6 +43,7 @@
 		A2000000000000000000000B /* WindowHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowHistory.swift; sourceTree = "<group>"; };
 		A2000000000000000000000C /* WindowFocusObserverService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowFocusObserverService.swift; sourceTree = "<group>"; };
 		A2000000000000000000000D /* WindowShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowShortcut.swift; sourceTree = "<group>"; };
+		A2000000000000000000000E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B20000000000000000000000 /* WingoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WingoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B20000000000000000000001 /* WindowHistoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowHistoryTests.swift; sourceTree = "<group>"; };
 		B20000000000000000000002 /* WindowShortcutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowShortcutTests.swift; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				A2000000000000000000000A /* AppDelegate.swift */,
+				A2000000000000000000000E /* Assets.xcassets */,
 				A20000000000000000000001 /* WingoApp.swift */,
 				A40000000000000000000002 /* Models */,
 				A40000000000000000000003 /* Services */,
@@ -220,6 +223,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1000000000000000000000E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,6 +311,7 @@
 		AA0000000000000000000003 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -333,6 +338,7 @@
 		AA0000000000000000000004 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
