@@ -45,6 +45,7 @@ struct WindowListView: View {
                 .strokeBorder(.separator.opacity(0.45), lineWidth: 1)
         }
         .focusable()
+        .focusEffectDisabled()
         .focused($hasKeyboardFocus)
         .task {
             viewModel.load(promptForPermission: true, resetSelection: true)
