@@ -55,6 +55,10 @@ final class WindowHistoryTests: XCTestCase {
                 processIdentifier: processIdentifier,
                 accessibilityElementHash: CFHashCode(value)
             ),
+            applicationIdentifier: ApplicationIdentifier(
+                bundleIdentifier: "studio.okaryo.application-\(value)",
+                processIdentifier: processIdentifier
+            ),
             processIdentifier: processIdentifier,
             applicationName: "Application \(value)",
             applicationIcon: nil,

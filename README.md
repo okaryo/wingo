@@ -4,9 +4,10 @@ Wingo is a keyboard-first window switcher for macOS.
 
 ## Current status
 
-The initial MVP through Phase 7 is implemented. `Cmd + Ctrl + ↑` opens a floating,
-keyboard-controlled switcher with in-memory MRU ordering. Windows from the same application are
-listed separately, and `Cmd + 1` through `Cmd + 9` switch directly to the corresponding row.
+The initial MVP through Phase 8 is implemented. `Cmd + Ctrl + ↑` opens a floating,
+keyboard-controlled switcher with in-memory MRU ordering. Application tabs filter the list while
+preserving most-recently-focused order, and `Cmd + 1` through `Cmd + 9` switch directly to the
+corresponding visible row.
 
 ## Requirements
 
@@ -34,16 +35,20 @@ Do not run a broad `tccutil reset Accessibility`; that would remove other applic
 
 ```text
 Cmd + Ctrl + ↑  Open Wingo
-↑ / ↓           Move selection
+← / → or h / l  Move between application tabs
+Cmd + Shift + [ / ]
+                 Move between application tabs
+↑ / ↓ or k / j  Move window selection
 Enter           Switch to the selected window
 Esc             Close and return to the previous application
-Cmd + 1...9     Switch directly to rows 1 through 9
+Cmd + 1...9     Switch directly to visible rows 1 through 9
 ```
 
 ## Tests
 
 Run the `WingoTests` tests with **Product → Test** in Xcode. These tests cover in-memory MRU
-ordering, fallback ordering, initial selection behavior, and direct-shortcut index mapping.
+ordering, fallback ordering, initial selection behavior, application tabs and filtering, and
+direct-shortcut index mapping.
 
 Wingo currently keeps its Dock icon to make development and verification easier. The switcher
 itself uses a titleless floating panel.
@@ -122,6 +127,21 @@ Verified on macOS 26.5 with a single built-in display:
 - Permission denial displays an actionable explanation and links to System Settings.
 
 Multiple-display placement was not verified because the test Mac had only one active display.
+
+## Phase 8 manual verification
+
+1. Open windows from at least three applications, including multiple windows from one application.
+2. Open Wingo and confirm `All` is the leftmost selected tab and each application badge shows its
+   current window count.
+3. Focus windows from different applications, reopen Wingo, and confirm application tabs follow
+   the most-recently-focused window order.
+4. Move between tabs with `←` / `→`, `h` / `l`, and `Cmd + Shift + [` / `]`; confirm movement wraps
+   and the selected tab remains visible when the header scrolls.
+5. Confirm an application tab shows only that application's windows in MRU order, and `All` shows
+   every window again.
+6. Move through the filtered list with `↑` / `↓` and `k` / `j`, including wrapping at both ends.
+7. Confirm `Cmd + 1...9` targets the corresponding visible row after changing tabs.
+8. Dismiss and reopen Wingo after selecting an application tab; confirm it opens on `All`.
 
 ## Privacy
 

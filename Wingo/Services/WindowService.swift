@@ -31,6 +31,10 @@ enum WindowService {
             }
 
             let applicationName = application.localizedName ?? "Unknown Application"
+            let applicationIdentifier = ApplicationIdentifier(
+                bundleIdentifier: application.bundleIdentifier,
+                processIdentifier: application.processIdentifier
+            )
 
             for windowElement in applicationWindows where isSwitchableWindow(windowElement) {
                 let rawTitle: String? = copyAttribute(kAXTitleAttribute, from: windowElement)
@@ -43,6 +47,7 @@ enum WindowService {
                 windows.append(
                     WindowItem(
                         id: identifier,
+                        applicationIdentifier: applicationIdentifier,
                         processIdentifier: application.processIdentifier,
                         applicationName: applicationName,
                         applicationIcon: application.icon,

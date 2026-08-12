@@ -1,6 +1,19 @@
 import AppKit
 import ApplicationServices
 
+struct ApplicationIdentifier: Hashable {
+    private let rawValue: String
+
+    init(bundleIdentifier: String?, processIdentifier: pid_t) {
+        if let bundleIdentifier,
+           !bundleIdentifier.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            rawValue = "bundle:\(bundleIdentifier)"
+        } else {
+            rawValue = "process:\(processIdentifier)"
+        }
+    }
+}
+
 struct WindowIdentifier: Hashable {
     let processIdentifier: pid_t
     let accessibilityElementHash: CFHashCode
@@ -26,6 +39,7 @@ final class AccessibilityWindowReference {
 
 struct WindowItem: Identifiable {
     let id: WindowIdentifier
+    let applicationIdentifier: ApplicationIdentifier
     let processIdentifier: pid_t
     let applicationName: String
     let applicationIcon: NSImage?

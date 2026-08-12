@@ -35,7 +35,7 @@ struct WindowListView: View {
             case .permissionRequired:
                 permissionView
             case .loaded:
-                windowList
+                loadedContent
             }
         }
         .padding(12)
@@ -67,6 +67,14 @@ struct WindowListView: View {
             viewModel.moveSelection(.down)
             return .handled
         }
+        .onKeyPress(.leftArrow) {
+            viewModel.moveApplicationSelection(.previous)
+            return .handled
+        }
+        .onKeyPress(.rightArrow) {
+            viewModel.moveApplicationSelection(.next)
+            return .handled
+        }
         .onKeyPress(.return) {
             guard viewModel.selectedWindowID != nil else {
                 return .ignored
@@ -79,16 +87,7 @@ struct WindowListView: View {
             return .handled
         }
         .onKeyPress(phases: .down) { keyPress in
-            guard
-                keyPress.modifiers.contains(.command),
-                let shortcutNumber = Int(keyPress.characters),
-                viewModel.selectWindow(forShortcutNumber: shortcutNumber)
-            else {
-                return .ignored
-            }
-
-            activateSelectedWindow()
-            return .handled
+            handleKeyPress(keyPress)
         }
         .alert(item: $viewModel.activationAlert) { alert in
             Alert(
@@ -97,6 +96,119 @@ struct WindowListView: View {
                 dismissButton: .default(Text("OK"))
             )
         }
+    }
+
+    private var loadedContent: some View {
+        VStack(spacing: 8) {
+            applicationHeader
+
+            Divider()
+
+            windowList
+        }
+    }
+
+    private var applicationHeader: some View {
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    applicationTab(
+                        selection: .all,
+                        title: "All",
+                        icon: nil,
+                        systemImage: "square.grid.2x2",
+                        isAll: true,
+                        windowCount: viewModel.allWindowCount
+                    )
+
+                    ForEach(viewModel.applicationTabs) { tab in
+                        applicationTab(
+                            selection: .application(tab.id),
+                            title: tab.applicationName,
+                            icon: tab.applicationIcon,
+                            systemImage: "app",
+                            isAll: false,
+                            windowCount: tab.windowCount
+                        )
+                    }
+                }
+                .padding(.horizontal, 4)
+                .padding(.vertical, 2)
+            }
+            .onChange(of: viewModel.selectedApplication) { _, selectedApplication in
+                withAnimation(.easeOut(duration: 0.1)) {
+                    proxy.scrollTo(selectedApplication, anchor: .center)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func applicationTab(
+        selection: WindowListViewModel.ApplicationSelection,
+        title: String,
+        icon: NSImage?,
+        systemImage: String,
+        isAll: Bool,
+        windowCount: Int
+    ) -> some View {
+        let isSelected = viewModel.selectedApplication == selection
+
+        return Button {
+            viewModel.selectApplication(selection)
+            hasKeyboardFocus = true
+        } label: {
+            ZStack(alignment: .topTrailing) {
+                if let icon {
+                    Image(nsImage: icon)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 34, height: 34)
+                } else {
+                    Image(systemName: systemImage)
+                        .font(.system(size: 25, weight: .medium))
+                        .frame(width: 34, height: 34)
+                }
+
+                if isAll || windowCount > 1 {
+                    Text("\(windowCount)")
+                        .font(.system(size: 9, weight: .semibold, design: .rounded).monospacedDigit())
+                        .foregroundStyle(
+                            isAll && !isSelected ? Color.white : Color.secondary
+                        )
+                        .padding(.horizontal, 4)
+                        .frame(minWidth: 16, minHeight: 16)
+                        .background {
+                            Capsule()
+                                .fill(
+                                    isAll && !isSelected
+                                        ? AnyShapeStyle(Color.accentColor)
+                                        : AnyShapeStyle(.regularMaterial)
+                                )
+                        }
+                        .overlay {
+                            if !isAll {
+                                Capsule()
+                                    .strokeBorder(Color.secondary.opacity(0.25), lineWidth: 0.5)
+                            }
+                        }
+                        .offset(x: 7, y: -6)
+                }
+            }
+            .foregroundStyle(isSelected ? Color.white : Color.primary)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .background {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(isSelected ? Color.accentColor : Color.clear)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .id(selection)
+        .help(title)
+        .accessibilityLabel("\(title), \(windowCount) windows")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     private var permissionView: some View {
@@ -130,7 +242,7 @@ struct WindowListView: View {
                 )
             } else {
                 ScrollViewReader { proxy in
-                    ScrollView {
+                    ScrollView(.vertical, showsIndicators: false) {
                         LazyVStack(spacing: 4) {
                             ForEach(
                                 Array(viewModel.windows.enumerated()),
@@ -145,7 +257,6 @@ struct WindowListView: View {
                         }
                         .padding(4)
                     }
-                    .scrollIndicators(.hidden)
                     .onChange(of: viewModel.selectedWindowID) { _, selectedWindowID in
                         guard let selectedWindowID else {
                             return
@@ -225,5 +336,51 @@ struct WindowListView: View {
         } else {
             onActivationFailure()
         }
+    }
+
+    private func handleKeyPress(_ keyPress: KeyPress) -> KeyPress.Result {
+        let modifiers = keyPress.modifiers
+        let hasCommand = modifiers.contains(.command)
+        let hasShift = modifiers.contains(.shift)
+        let hasOption = modifiers.contains(.option)
+        let hasControl = modifiers.contains(.control)
+
+        if hasCommand, hasShift, !hasOption, !hasControl {
+            switch keyPress.characters {
+            case "[", "{":
+                viewModel.moveApplicationSelection(.previous)
+                return .handled
+            case "]", "}":
+                viewModel.moveApplicationSelection(.next)
+                return .handled
+            default:
+                return .ignored
+            }
+        }
+
+        if hasCommand, !hasShift, !hasOption, !hasControl,
+           let shortcutNumber = Int(keyPress.characters),
+           viewModel.selectWindow(forShortcutNumber: shortcutNumber) {
+            activateSelectedWindow()
+            return .handled
+        }
+
+        guard !hasCommand, !hasShift, !hasOption, !hasControl else {
+            return .ignored
+        }
+
+        switch keyPress.characters.lowercased() {
+        case "h":
+            viewModel.moveApplicationSelection(.previous)
+        case "j":
+            viewModel.moveSelection(.down)
+        case "k":
+            viewModel.moveSelection(.up)
+        case "l":
+            viewModel.moveApplicationSelection(.next)
+        default:
+            return .ignored
+        }
+        return .handled
     }
 }
