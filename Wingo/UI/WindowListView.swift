@@ -86,7 +86,7 @@ struct WindowListView: View {
             onDismiss()
             return .handled
         }
-        .onKeyPress(phases: .down) { keyPress in
+        .onKeyPress(phases: [.down, .repeat]) { keyPress in
             handleKeyPress(keyPress)
         }
         .alert(item: $viewModel.activationAlert) { alert in
