@@ -1,157 +1,136 @@
 # Wingo
 
-Wingo is a keyboard-first window switcher for macOS.
+Wingo is a keyboard-first window switcher for macOS. It shows windows from running applications
+in most-recently-used order so you can find and focus a specific window without reaching for the
+mouse.
 
-## Current status
+## Features
 
-The initial MVP through Phase 8 is implemented. `Cmd + Ctrl + ↑` opens a floating,
-keyboard-controlled switcher with in-memory MRU ordering. Application tabs filter the list while
-preserving most-recently-focused order, and `Cmd + 1` through `Cmd + 9` switch directly to the
-corresponding visible row.
+- Open the switcher from anywhere with a global keyboard shortcut.
+- Switch directly to an individual window, including another window from the same application.
+- Keep windows in most-recently-used (MRU) order while Wingo is running.
+- Filter windows by application using tabs with window counts.
+- Navigate entirely with arrow keys or Vim-style `h`, `j`, `k`, and `l` keys.
+- Jump to one of the first nine visible windows with `Command + 1` through `Command + 9`.
+- Restore minimized windows when switching to them.
+- Open on the display containing the pointer and work across macOS Spaces and full-screen apps.
+- Follow the system Light and Dark appearances.
 
 ## Requirements
 
 - macOS 15.0 or later
-- Xcode 26 or later for development
+- Accessibility permission for discovering and focusing windows
+- Xcode 26 or later when building from source
+
+## Getting started
+
+Wingo is currently distributed by building it from source:
+
+1. Open `Wingo.xcodeproj` in Xcode.
+2. Select the `Wingo` scheme and run the app.
+3. When prompted, allow Wingo under **System Settings → Privacy & Security → Accessibility**.
+4. Focus another application and press `Command + Control + Up Arrow` to open Wingo.
+
+The Accessibility permission is required because macOS does not otherwise allow Wingo to inspect
+or focus windows owned by other applications.
+
+## Keyboard controls
+
+| Shortcut | Action |
+| --- | --- |
+| `Command + Control + Up Arrow` | Open Wingo |
+| `Up Arrow` / `Down Arrow` | Move the window selection |
+| `k` / `j` | Move the window selection up or down |
+| `Left Arrow` / `Right Arrow` | Move between application tabs |
+| `h` / `l` | Move between application tabs |
+| `Command + Shift + [` / `]` | Move between application tabs |
+| `Return` | Switch to the selected window |
+| `Escape` | Close Wingo and return to the previous application |
+| `Command + 1` … `9` | Switch to the corresponding visible window |
+
+Window and application-tab navigation wraps at both ends. Number shortcuts always follow the
+currently visible, filtered list.
+
+## How window ordering works
+
+Wingo observes focused-window changes while it is running and places the most recently focused
+windows first. When the switcher opens, it initially selects the previous window where possible,
+making it quick to alternate between two windows.
+
+MRU history is currently stored in memory and resets when Wingo quits. Windows that have not yet
+been observed retain their discovery order.
 
 ## Development
 
+### Build and run
+
 1. Open `Wingo.xcodeproj` in Xcode.
-2. Confirm the Wingo target has a valid development team selected under **Signing & Capabilities**.
+2. Select a development team for the Wingo target under **Signing & Capabilities** if necessary.
 3. Select the `Wingo` scheme and run the app.
 4. Grant Accessibility permission when prompted.
-5. Move away from Wingo, then press `Cmd + Ctrl + ↑` to open the switcher globally.
 
-If Wingo was previously run with a different or ad-hoc signature and its Accessibility toggle
-keeps returning to off, remove only Wingo's stale permission record before requesting access again:
+Wingo is a native macOS application built with SwiftUI and AppKit. It uses the macOS Accessibility
+API to discover and activate windows and the Carbon hot-key API to register its global shortcut.
+
+### Project structure
+
+```text
+Wingo/
+├── Models/      Window and shortcut data types
+├── Services/    Window discovery, activation, history, observation, and global shortcut handling
+├── UI/          SwiftUI switcher interface and AppKit panel management
+├── AppDelegate.swift
+└── WingoApp.swift
+WingoTests/      Unit tests
+```
+
+### Tests
+
+Run the `WingoTests` test target with **Product → Test** in Xcode, or from the command line:
+
+```sh
+xcodebuild test -project Wingo.xcodeproj -scheme Wingo -destination 'platform=macOS'
+```
+
+The tests cover MRU and fallback ordering, initial selection, application filtering and tab
+navigation, and direct number-shortcut mapping.
+
+## Troubleshooting
+
+### Accessibility permission does not stay enabled
+
+If Wingo was previously run with a different or ad-hoc signature, macOS may retain a stale
+permission record. Reset only Wingo's Accessibility entry, then run the app and grant permission
+again:
 
 ```sh
 tccutil reset Accessibility studio.okaryo.wingo
 ```
 
-Do not run a broad `tccutil reset Accessibility`; that would remove other applications' approvals.
+Avoid resetting Accessibility without the bundle identifier because that removes approvals for
+other applications too. Using a stable development signature also helps permission survive normal
+rebuilds.
 
-## Usage
+### The global shortcut does not work
 
-```text
-Cmd + Ctrl + ↑  Open Wingo
-← / → or h / l  Move between application tabs
-Cmd + Shift + [ / ]
-                 Move between application tabs
-↑ / ↓ or k / j  Move window selection
-Enter           Switch to the selected window
-Esc             Close and return to the previous application
-Cmd + 1...9     Switch directly to visible rows 1 through 9
-```
+Another application may already own `Command + Control + Up Arrow`. Wingo displays a registration
+error when macOS refuses the shortcut; close or reconfigure the conflicting application and
+relaunch Wingo.
 
-## Tests
+### Some windows are missing
 
-Run the `WingoTests` tests with **Product → Test** in Xcode. These tests cover in-memory MRU
-ordering, fallback ordering, initial selection behavior, application tabs and filtering, and
-direct-shortcut index mapping.
-
-Wingo currently keeps its Dock icon to make development and verification easier. The switcher
-itself uses a titleless floating panel.
-
-## Accessibility Permission
-
-Wingo uses the macOS Accessibility API to discover windows owned by other applications. macOS
-requires explicit user permission for this access. Enable Wingo under **System Settings → Privacy
-& Security → Accessibility**.
-
-## Phase 2 manual verification
-
-After granting Accessibility permission, verify window activation with the switcher UI:
-
-1. Open multiple windows in the same application, such as VS Code, Chrome, Finder, or Terminal.
-2. Select each window in Wingo and press `Enter`; confirm the exact selected window is
-   raised and focused rather than only activating its application.
-3. Minimize a target window and activate it from Wingo; confirm it is restored and focused.
-4. Close a window after refreshing Wingo, then try to activate the stale entry; confirm Wingo shows
-   an error instead of crashing.
-5. Quit a target application after refreshing Wingo and confirm activating its stale entry is
-   handled safely.
-
-## Phase 3 manual verification
-
-1. Launch Wingo, then dismiss its panel with `Esc` without quitting the application.
-2. Focus another application and press `Cmd + Ctrl + ↑`.
-3. Confirm Wingo reappears, becomes ready for input, and refreshes its window list.
-4. Repeat the shortcut from several applications and after closing or opening target windows.
-5. If another application already owns the shortcut, confirm Wingo shows a registration error
-   instead of silently failing.
-
-## Phase 4 manual verification
-
-1. Press `Cmd + Ctrl + ↑` and confirm a titleless floating panel appears near the center of the
-   display containing the mouse pointer.
-2. Confirm the first window is selected when the panel opens.
-3. Use `↑` and `↓` to move the selection, including wrapping at both ends of the list.
-4. Press `Enter` and confirm the panel disappears before the selected window receives focus.
-5. Press `Esc` and confirm the panel disappears without switching windows.
-6. Confirm long window titles stay on one line and the panel follows Light and Dark appearances.
-
-## Phase 5 manual verification
-
-1. Focus three or more windows in a known order, including multiple windows from the same app.
-2. Open Wingo and confirm the most recently focused windows appear first.
-3. Confirm the currently focused window remains listed, but the previous different window is
-   initially selected so `Cmd + Ctrl + ↑`, then `Enter`, returns to it.
-4. Switch back and forth using Wingo and confirm the MRU order updates each time.
-5. Open or close windows and confirm untracked windows use a stable fallback order without crashes.
-6. Quit and relaunch Wingo and confirm it starts safely with a fresh in-memory history.
-
-## Phase 6 manual verification
-
-1. Open at least ten windows, then open Wingo and confirm only the first nine rows show shortcut
-   labels from `⌘1` through `⌘9`.
-2. Press each available `Cmd + 1...9` shortcut and confirm Wingo closes before switching directly
-   to the window on the corresponding row.
-3. Open Wingo with fewer than nine windows and press a number without a corresponding row; confirm
-   the panel stays open and no window is switched.
-4. Change the MRU order by focusing different windows, reopen Wingo, and confirm the number
-   shortcuts follow the newly displayed order.
-
-## Phase 7 verification results
-
-Verified on macOS 26.5 with a single built-in display:
-
-- The global shortcut reopens Wingo after it hides, and Accessibility approval survives a normal
-  rebuild when the app uses a stable Apple Development signature.
-- Chrome, ChatGPT, Finder, Slack, Xcode, Simulator, and multiple VS Code windows appear as separate
-  rows with application icons and window titles.
-- Separate VS Code and Chrome windows can be targeted individually with direct number shortcuts.
-- MRU order updates after a switch, while initial selection points to the previous window.
-- Arrow-key selection, `Enter`, `Esc`, and `Cmd + 1...9` work without requiring the mouse.
-- Closing a test Chrome window removes it from the next list refresh without crashing Wingo.
-- Permission denial displays an actionable explanation and links to System Settings.
-
-Multiple-display placement was not verified because the test Mac had only one active display.
-
-## Phase 8 manual verification
-
-1. Open windows from at least three applications, including multiple windows from one application.
-2. Open Wingo and confirm `All` is the leftmost selected tab and each application badge shows its
-   current window count.
-3. Focus windows from different applications, reopen Wingo, and confirm application tabs follow
-   the most-recently-focused window order.
-4. Move between tabs with `←` / `→`, `h` / `l`, and `Cmd + Shift + [` / `]`; confirm movement wraps
-   and the selected tab remains visible when the header scrolls.
-5. Confirm an application tab shows only that application's windows in MRU order, and `All` shows
-   every window again.
-6. Move through the filtered list with `↑` / `↓` and `k` / `j`, including wrapping at both ends.
-7. Confirm `Cmd + 1...9` targets the corresponding visible row after changing tabs.
-8. Dismiss and reopen Wingo after selecting an application tab; confirm it opens on `All`.
+Applications expose their windows through the macOS Accessibility API. Some applications provide
+incomplete or unusual window information, so their windows may not appear or behave as expected.
 
 ## Privacy
 
-Wingo does not perform network communication or send window information, titles, or usage data
-outside the Mac.
+Wingo does not perform network communication. Window titles, application information, and usage
+history remain on the Mac, and MRU history exists only in memory for the lifetime of the process.
 
 ## Current limitations
 
-- MRU history is kept in memory and resets when Wingo quits.
+- The global shortcut is not configurable.
+- MRU history resets when Wingo quits.
 - Some applications expose incomplete or unusual window information through the Accessibility API.
-- Multiple-display placement has not yet been verified on physical multi-display hardware.
-- The Dock icon remains visible in this development-oriented MVP.
-- Wingo is not yet packaged as a Developer ID-signed, notarized DMG.
+- Wingo keeps a Dock icon while it is running.
+- Prebuilt, Developer ID-signed and notarized releases are not currently provided.
