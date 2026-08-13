@@ -4,6 +4,7 @@ struct WindowListView: View {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel: WindowListViewModel
     @FocusState private var hasKeyboardFocus: Bool
+    @State private var listPresentationID = 0
 
     let onDismiss: () -> Void
     let onPrepareForActivation: () -> Void
@@ -53,6 +54,7 @@ struct WindowListView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .wingoSwitcherWillShow)) { _ in
             viewModel.load(resetSelection: true)
+            listPresentationID += 1
             hasKeyboardFocus = true
         }
         .onChange(of: scenePhase) { _, newPhase in
@@ -258,6 +260,7 @@ struct WindowListView: View {
                         }
                         .padding(4)
                     }
+                    .id(listPresentationID)
                     .onChange(of: viewModel.selectedWindowID) { _, selectedWindowID in
                         guard let selectedWindowID else {
                             return
