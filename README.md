@@ -25,12 +25,16 @@ running applications so you can find and focus a specific window without reachin
 
 ## Getting started
 
-Wingo is currently distributed by building it from source:
+Wingo is currently intended to be used as a locally built Release build. GitHub Releases record
+released versions and their source revisions, but do not currently include a DMG or other prebuilt
+application artifact.
 
 1. Open `Wingo.xcodeproj` in Xcode.
-2. Select the `Wingo` scheme and run the app.
-3. When prompted, allow Wingo under **System Settings → Privacy & Security → Accessibility**.
-4. Focus another application and press `Command + Control + Up Arrow` to open Wingo.
+2. Select the `Wingo` scheme, open **Product → Scheme → Edit Scheme…**, and set the **Run** build
+   configuration to **Release**.
+3. Build and run the app from Xcode.
+4. When prompted, allow Wingo under **System Settings → Privacy & Security → Accessibility**.
+5. Focus another application and press `Command + Control + Up Arrow` to open Wingo.
 
 The Accessibility permission is required because macOS does not otherwise allow Wingo to inspect
 or focus windows owned by other applications.
@@ -99,6 +103,20 @@ xcodebuild test -project Wingo.xcodeproj -scheme Wingo -destination 'platform=ma
 
 The tests cover MRU and fallback ordering, initial selection, application filtering and tab
 navigation, and direct number-shortcut mapping.
+
+### Release process
+
+GitHub Releases are currently used to record versioned source releases only. Release assets such
+as DMGs are not uploaded; the application used locally is built in the Release configuration from
+the corresponding tag.
+
+1. Update `MARKETING_VERSION` to the user-facing version and increment
+   `CURRENT_PROJECT_VERSION` for the new build.
+2. Run the tests and commit the release changes.
+3. Create and push a version tag such as `v0.2.0` for that commit.
+4. Create the matching GitHub Release with release notes. Do not attach a DMG or other application
+   artifact.
+5. Build and use Wingo locally in the Release configuration from the tagged revision.
 
 ## Troubleshooting
 
