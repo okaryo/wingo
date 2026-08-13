@@ -89,7 +89,7 @@ final class SwitcherWindowController {
 
 @MainActor
 private final class SwitcherSession {
-    private weak var previouslyActiveApplication: NSRunningApplication?
+    private var previouslyActiveApplication: NSRunningApplication?
 
     func rememberPreviouslyActiveApplication() {
         guard let frontmostApplication = NSWorkspace.shared.frontmostApplication else {
@@ -102,8 +102,20 @@ private final class SwitcherSession {
     }
 
     func restorePreviouslyActiveApplication() {
-        previouslyActiveApplication?.activate()
-        previouslyActiveApplication = nil
+        guard let previouslyActiveApplication else {
+            return
+        }
+
+        self.previouslyActiveApplication = nil
+        guard !previouslyActiveApplication.isTerminated else {
+            return
+        }
+
+        let wingoApplication = NSRunningApplication.current
+        NSApp.yieldActivation(to: previouslyActiveApplication)
+        if !previouslyActiveApplication.activate(from: wingoApplication, options: []) {
+            _ = previouslyActiveApplication.activate(options: [])
+        }
     }
 
     func discardPreviouslyActiveApplication() {
