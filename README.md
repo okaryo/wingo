@@ -104,6 +104,32 @@ xcodebuild test -project Wingo.xcodeproj -scheme Wingo -destination 'platform=ma
 The tests cover MRU and fallback ordering, initial selection, application filtering and tab
 navigation, and direct number-shortcut mapping.
 
+### Build a Release from the command line
+
+From the repository root, build Wingo in the Release configuration with:
+
+```sh
+xcodebuild build \
+  -project Wingo.xcodeproj \
+  -scheme Wingo \
+  -configuration Release \
+  -destination 'platform=macOS' \
+  -derivedDataPath .build
+```
+
+The application is generated at `.build/Build/Products/Release/Wingo.app`. Reveal it in Finder,
+quit any running copy of Wingo, and move or replace it in `/Applications`:
+
+```sh
+open -R .build/Build/Products/Release/Wingo.app
+```
+
+Once installed, Wingo can be launched without opening Xcode:
+
+```sh
+open /Applications/Wingo.app
+```
+
 ### Release process
 
 GitHub Releases are currently used to record versioned source releases only. Release assets such
@@ -116,7 +142,8 @@ the corresponding tag.
 3. Create and push a version tag such as `v0.2.0` for that commit.
 4. Create the matching GitHub Release with release notes. Do not attach a DMG or other application
    artifact.
-5. Build and use Wingo locally in the Release configuration from the tagged revision.
+5. Check out the tagged revision and build it locally using the Release command above.
+6. Replace `/Applications/Wingo.app` with the generated application.
 
 ## Troubleshooting
 
