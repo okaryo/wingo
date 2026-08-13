@@ -15,6 +15,7 @@ final class WindowListViewModel: ObservableObject {
     enum ApplicationSelection: Hashable {
         case all
         case application(ApplicationIdentifier)
+        case otherApplications
     }
 
     struct ApplicationTab: Identifiable {
@@ -62,6 +63,15 @@ final class WindowListViewModel: ObservableObject {
 
     var allWindowCount: Int { allWindows.count }
 
+    var otherApplicationWindowCount: Int {
+        let groupedWindowCount = applicationTabs.reduce(0) { $0 + $1.windowCount }
+        return allWindows.count - groupedWindowCount
+    }
+
+    var hasOtherApplicationsTab: Bool {
+        !applicationTabs.isEmpty && otherApplicationWindowCount > 0
+    }
+
     func load(promptForPermission: Bool = false, resetSelection: Bool = false) {
         guard isAccessibilityTrusted(promptForPermission) else {
             allWindows = []
@@ -96,9 +106,7 @@ final class WindowListViewModel: ObservableObject {
     }
 
     func selectApplication(_ selection: ApplicationSelection) {
-        guard selection == .all || applicationTabs.contains(where: {
-            selection == .application($0.id)
-        }) else {
+        guard isApplicationSelectionAvailable(selection) else {
             return
         }
 
@@ -119,8 +127,11 @@ final class WindowListViewModel: ObservableObject {
     }
 
     func moveApplicationSelection(_ direction: ApplicationSelectionDirection) {
-        let selections = [ApplicationSelection.all]
+        var selections = [ApplicationSelection.all]
             + applicationTabs.map { ApplicationSelection.application($0.id) }
+        if hasOtherApplicationsTab {
+            selections.append(.otherApplications)
+        }
         guard !selections.isEmpty else {
             return
         }
@@ -205,11 +216,17 @@ final class WindowListViewModel: ObservableObject {
     }
 
     private var isSelectedApplicationAvailable: Bool {
-        switch selectedApplication {
+        isApplicationSelectionAvailable(selectedApplication)
+    }
+
+    private func isApplicationSelectionAvailable(_ selection: ApplicationSelection) -> Bool {
+        switch selection {
         case .all:
             return true
         case let .application(identifier):
             return applicationTabs.contains(where: { $0.id == identifier })
+        case .otherApplications:
+            return hasOtherApplicationsTab
         }
     }
 
@@ -219,6 +236,11 @@ final class WindowListViewModel: ObservableObject {
             windows = allWindows
         case let .application(identifier):
             windows = allWindows.filter { $0.applicationIdentifier == identifier }
+        case .otherApplications:
+            let groupedApplicationIdentifiers = Set(applicationTabs.map(\.id))
+            windows = allWindows.filter {
+                !groupedApplicationIdentifiers.contains($0.applicationIdentifier)
+            }
         }
     }
 
@@ -248,6 +270,6 @@ final class WindowListViewModel: ObservableObject {
             }
         }
 
-        return tabs
+        return tabs.filter { $0.windowCount > 1 }
     }
 }

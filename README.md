@@ -8,7 +8,8 @@ running applications so you can find and focus a specific window without reachin
 - Open the switcher from anywhere with a global keyboard shortcut.
 - Switch directly to an individual window, including another window from the same application.
 - Keep windows in MRU order while placing the currently focused window last.
-- Filter windows by application using tabs with window counts.
+- Filter windows using tabs for applications that have multiple windows open, plus an icon-only
+  Other Apps tab for applications with a single window.
 - Navigate entirely with arrow keys or Vim-style `h`, `j`, `k`, and `l` keys.
 - Jump to one of the first nine visible windows with `Command + 1` through `Command + 9`.
 - Restore minimized windows when switching to them.
@@ -47,8 +48,10 @@ or focus windows owned by other applications.
 | `Escape` | Close Wingo and return to the previous application |
 | `Command + 1` … `9` | Switch to the corresponding visible window |
 
-Window and application-tab navigation wraps at both ends. Number shortcuts always follow the
-currently visible, filtered list.
+Window and application-tab navigation wraps at both ends. The Other Apps tab groups applications
+that each have a single window and is identified by an ellipsis icon. Application tabs are hidden
+when every application has only one window. Number shortcuts always follow the currently visible,
+filtered list.
 
 ## How window ordering works
 

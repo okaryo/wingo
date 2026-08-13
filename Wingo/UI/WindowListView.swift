@@ -103,9 +103,11 @@ struct WindowListView: View {
 
     private var loadedContent: some View {
         VStack(spacing: 8) {
-            applicationHeader
+            if !viewModel.applicationTabs.isEmpty {
+                applicationHeader
 
-            Divider()
+                Divider()
+            }
 
             windowList
         }
@@ -132,6 +134,17 @@ struct WindowListView: View {
                             systemImage: "app",
                             isAll: false,
                             windowCount: tab.windowCount
+                        )
+                    }
+
+                    if viewModel.hasOtherApplicationsTab {
+                        applicationTab(
+                            selection: .otherApplications,
+                            title: "Other Apps",
+                            icon: nil,
+                            systemImage: "ellipsis",
+                            isAll: false,
+                            windowCount: viewModel.otherApplicationWindowCount
                         )
                     }
                 }
@@ -173,7 +186,7 @@ struct WindowListView: View {
                         .frame(width: 34, height: 34)
                 }
 
-                if isAll || windowCount > 1 {
+                if isAll || selection == .otherApplications || windowCount > 1 {
                     Text("\(windowCount)")
                         .font(.system(size: 9, weight: .semibold, design: .rounded).monospacedDigit())
                         .foregroundStyle(

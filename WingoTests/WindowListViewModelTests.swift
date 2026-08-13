@@ -4,7 +4,7 @@ import XCTest
 
 @MainActor
 final class WindowListViewModelTests: XCTestCase {
-    func testBuildsApplicationTabsFromWindowOrderWithCounts() {
+    func testBuildsApplicationTabsOnlyForApplicationsWithMultipleWindows() {
         let appAFirst = makeWindow(id: 1, application: 10, name: "App A")
         let appASecond = makeWindow(id: 2, application: 10, name: "App A")
         let appB = makeWindow(id: 3, application: 20, name: "App B")
@@ -18,9 +18,37 @@ final class WindowListViewModelTests: XCTestCase {
 
         viewModel.load(resetSelection: true)
 
-        XCTAssertEqual(viewModel.applicationTabs.map(\.applicationName), ["App A", "App B"])
-        XCTAssertEqual(viewModel.applicationTabs.map(\.windowCount), [2, 1])
+        XCTAssertEqual(viewModel.applicationTabs.map(\.applicationName), ["App A"])
+        XCTAssertEqual(viewModel.applicationTabs.map(\.windowCount), [2])
         XCTAssertEqual(viewModel.allWindowCount, 3)
+        XCTAssertEqual(viewModel.otherApplicationWindowCount, 1)
+        XCTAssertTrue(viewModel.hasOtherApplicationsTab)
+    }
+
+    func testBuildsNoApplicationTabsWhenEveryApplicationHasOneWindow() {
+        let appA = makeWindow(id: 1, application: 10, name: "App A")
+        let appB = makeWindow(id: 2, application: 20, name: "App B")
+        let viewModel = makeViewModel(windows: [appA, appB])
+
+        viewModel.load(resetSelection: true)
+
+        XCTAssertTrue(viewModel.applicationTabs.isEmpty)
+        XCTAssertFalse(viewModel.hasOtherApplicationsTab)
+        XCTAssertEqual(viewModel.selectedApplication, .all)
+        XCTAssertEqual(viewModel.windows.map(\.id), [appA.id, appB.id])
+    }
+
+    func testApplicationNavigationStaysOnAllWhenThereAreNoApplicationTabs() {
+        let appA = makeWindow(id: 1, application: 10, name: "App A")
+        let appB = makeWindow(id: 2, application: 20, name: "App B")
+        let viewModel = makeViewModel(windows: [appA, appB])
+        viewModel.load(resetSelection: true)
+
+        viewModel.moveApplicationSelection(.next)
+        viewModel.moveApplicationSelection(.previous)
+
+        XCTAssertEqual(viewModel.selectedApplication, .all)
+        XCTAssertEqual(viewModel.windows.map(\.id), [appA.id, appB.id])
     }
 
     func testInitialSelectionAndShortcutsFollowOrderingWithCurrentWindowLast() {
@@ -60,6 +88,50 @@ final class WindowListViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.windows.map(\.id), [newer.id, older.id])
     }
 
+    func testSelectingOtherApplicationsShowsSingleWindowApplicationsInMRUOrder() {
+        let groupedFirst = makeWindow(id: 1, application: 10, name: "App A")
+        let groupedSecond = makeWindow(id: 2, application: 10, name: "App A")
+        let olderOther = makeWindow(id: 3, application: 20, name: "App B")
+        let newerOther = makeWindow(id: 4, application: 30, name: "App C")
+        let history = WindowHistory()
+        history.recordFocusedWindow(olderOther.id)
+        history.recordFocusedWindow(newerOther.id)
+        history.recordFocusedWindow(groupedSecond.id)
+        let viewModel = makeViewModel(
+            windows: [groupedFirst, groupedSecond, olderOther, newerOther],
+            history: history
+        )
+        viewModel.load(resetSelection: true)
+
+        viewModel.selectApplication(.otherApplications)
+
+        XCTAssertEqual(viewModel.windows.map(\.id), [newerOther.id, olderOther.id])
+        XCTAssertEqual(viewModel.selectedWindowID, newerOther.id)
+    }
+
+    func testApplicationNavigationIncludesOtherApplicationsAfterApplicationTabs() {
+        let appAFirst = makeWindow(id: 1, application: 10, name: "App A")
+        let other = makeWindow(id: 2, application: 20, name: "App B")
+        let appASecond = makeWindow(id: 3, application: 10, name: "App A")
+        let viewModel = makeViewModel(windows: [appAFirst, other, appASecond])
+        viewModel.load(resetSelection: true)
+
+        viewModel.moveApplicationSelection(.previous)
+        XCTAssertEqual(viewModel.selectedApplication, .otherApplications)
+
+        viewModel.moveApplicationSelection(.next)
+        XCTAssertEqual(viewModel.selectedApplication, .all)
+
+        viewModel.moveApplicationSelection(.next)
+        XCTAssertEqual(
+            viewModel.selectedApplication,
+            .application(appAFirst.applicationIdentifier)
+        )
+
+        viewModel.moveApplicationSelection(.next)
+        XCTAssertEqual(viewModel.selectedApplication, .otherApplications)
+    }
+
     func testSelectingApplicationResetsWindowSelectionToFirstVisibleWindow() {
         let appAFirst = makeWindow(id: 1, application: 10, name: "App A")
         let appB = makeWindow(id: 2, application: 20, name: "App B")
@@ -75,19 +147,29 @@ final class WindowListViewModelTests: XCTestCase {
     }
 
     func testApplicationSelectionWrapsAcrossAllAndApplicationTabs() {
-        let appA = makeWindow(id: 1, application: 10, name: "App A")
-        let appB = makeWindow(id: 2, application: 20, name: "App B")
-        let viewModel = makeViewModel(windows: [appA, appB])
+        let appAFirst = makeWindow(id: 1, application: 10, name: "App A")
+        let appBFirst = makeWindow(id: 2, application: 20, name: "App B")
+        let appASecond = makeWindow(id: 3, application: 10, name: "App A")
+        let appBSecond = makeWindow(id: 4, application: 20, name: "App B")
+        let viewModel = makeViewModel(
+            windows: [appAFirst, appBFirst, appASecond, appBSecond]
+        )
         viewModel.load(resetSelection: true)
 
         viewModel.moveApplicationSelection(.previous)
-        XCTAssertEqual(viewModel.selectedApplication, .application(appB.applicationIdentifier))
+        XCTAssertEqual(
+            viewModel.selectedApplication,
+            .application(appBFirst.applicationIdentifier)
+        )
 
         viewModel.moveApplicationSelection(.next)
         XCTAssertEqual(viewModel.selectedApplication, .all)
 
         viewModel.moveApplicationSelection(.next)
-        XCTAssertEqual(viewModel.selectedApplication, .application(appA.applicationIdentifier))
+        XCTAssertEqual(
+            viewModel.selectedApplication,
+            .application(appAFirst.applicationIdentifier)
+        )
     }
 
     func testDirectShortcutUsesFilteredWindowIndexes() {
@@ -105,15 +187,16 @@ final class WindowListViewModelTests: XCTestCase {
 
     func testResetSelectionReturnsToAll() {
         let appA = makeWindow(id: 1, application: 10, name: "App A")
-        let appB = makeWindow(id: 2, application: 20, name: "App B")
-        let viewModel = makeViewModel(windows: [appA, appB])
+        let appBFirst = makeWindow(id: 2, application: 20, name: "App B")
+        let appBSecond = makeWindow(id: 3, application: 20, name: "App B")
+        let viewModel = makeViewModel(windows: [appA, appBFirst, appBSecond])
         viewModel.load(resetSelection: true)
-        viewModel.selectApplication(.application(appB.applicationIdentifier))
+        viewModel.selectApplication(.application(appBFirst.applicationIdentifier))
 
         viewModel.load(resetSelection: true)
 
         XCTAssertEqual(viewModel.selectedApplication, .all)
-        XCTAssertEqual(viewModel.windows.map(\.id), [appA.id, appB.id])
+        XCTAssertEqual(viewModel.windows.map(\.id), [appA.id, appBFirst.id, appBSecond.id])
     }
 
     func testResetSelectionReturnsWindowSelectionToFirstWindow() {
