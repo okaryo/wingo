@@ -38,6 +38,9 @@ final class SwitcherWindowController {
                     }
                     NSApp.activate()
                     window.makeKeyAndOrderFront(nil)
+                },
+                onQuit: {
+                    NSApp.terminate(nil)
                 }
             )
                 .frame(minWidth: 560, minHeight: 420)

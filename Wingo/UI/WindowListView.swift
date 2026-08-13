@@ -10,13 +10,15 @@ struct WindowListView: View {
     let onPrepareForActivation: () -> Void
     let onActivationSuccess: () -> Void
     let onActivationFailure: () -> Void
+    let onQuit: () -> Void
 
     init(
         windowHistory: WindowHistory,
         onDismiss: @escaping () -> Void,
         onPrepareForActivation: @escaping () -> Void,
         onActivationSuccess: @escaping () -> Void,
-        onActivationFailure: @escaping () -> Void
+        onActivationFailure: @escaping () -> Void,
+        onQuit: @escaping () -> Void
     ) {
         _viewModel = StateObject(
             wrappedValue: WindowListViewModel(windowHistory: windowHistory)
@@ -25,6 +27,7 @@ struct WindowListView: View {
         self.onPrepareForActivation = onPrepareForActivation
         self.onActivationSuccess = onActivationSuccess
         self.onActivationFailure = onActivationFailure
+        self.onQuit = onQuit
     }
 
     var body: some View {
@@ -379,6 +382,12 @@ struct WindowListView: View {
            let shortcutNumber = Int(keyPress.characters),
            viewModel.selectWindow(forShortcutNumber: shortcutNumber) {
             activateSelectedWindow()
+            return .handled
+        }
+
+        if hasCommand, !hasShift, !hasOption, !hasControl,
+           keyPress.characters.lowercased() == "q" {
+            onQuit()
             return .handled
         }
 

@@ -6,6 +6,7 @@ running applications so you can find and focus a specific window without reachin
 ## Features
 
 - Open the switcher from anywhere with a global keyboard shortcut.
+- Stay out of the Dock and application switcher while running in the background.
 - Switch directly to an individual window, including another window from the same application.
 - Keep windows in MRU order while placing the currently focused window last.
 - Filter windows using tabs for applications that have multiple windows open, plus an icon-only
@@ -47,6 +48,7 @@ or focus windows owned by other applications.
 | `Return` | Switch to the selected window |
 | `Escape` | Close Wingo and return to the previous application |
 | `Command + 1` … `9` | Switch to the corresponding visible window |
+| `Command + Q` | Quit Wingo while the switcher is open |
 
 Window and application-tab navigation wraps at both ends. The Other Apps tab groups applications
 that each have a single window and is identified by an ellipsis icon. Application tabs are hidden
@@ -135,5 +137,4 @@ history remain on the Mac, and MRU history exists only in memory for the lifetim
 - The global shortcut is not configurable.
 - MRU history resets when Wingo quits.
 - Some applications expose incomplete or unusual window information through the Accessibility API.
-- Wingo keeps a Dock icon while it is running.
 - Prebuilt, Developer ID-signed and notarized releases are not currently provided.
