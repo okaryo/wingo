@@ -11,9 +11,9 @@ enum GlobalShortcutError: LocalizedError {
             return "Wingo could not install its shortcut event handler (OSStatus \(status))."
         case let .hotKeyRegistrationFailed(status):
             if status == eventHotKeyExistsErr {
-                return "Cmd + Ctrl + ↑ is already registered by another application."
+                return "Option + Space is already registered by another application."
             }
-            return "Wingo could not register Cmd + Ctrl + ↑ (OSStatus \(status))."
+            return "Wingo could not register Option + Space (OSStatus \(status))."
         }
     }
 }
@@ -57,9 +57,9 @@ final class GlobalShortcutService: @unchecked Sendable {
             signature: Self.signature,
             id: Self.identifier
         )
-        let modifiers = UInt32(cmdKey | controlKey)
+        let modifiers = UInt32(optionKey)
         let registrationStatus = RegisterEventHotKey(
-            UInt32(kVK_UpArrow),
+            UInt32(kVK_Space),
             modifiers,
             hotKeyID,
             GetApplicationEventTarget(),
