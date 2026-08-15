@@ -34,7 +34,7 @@ application artifact.
    configuration to **Release**.
 3. Build and run the app from Xcode.
 4. When prompted, allow Wingo under **System Settings → Privacy & Security → Accessibility**.
-5. Focus another application and press `Command + Control + Up Arrow` to open Wingo.
+5. Focus another application and press `Option + Space` to open Wingo.
 
 The Accessibility permission is required because macOS does not otherwise allow Wingo to inspect
 or focus windows owned by other applications.
@@ -43,7 +43,7 @@ or focus windows owned by other applications.
 
 | Shortcut | Action |
 | --- | --- |
-| `Command + Control + Up Arrow` | Open Wingo |
+| `Option + Space` | Open Wingo |
 | `Up Arrow` / `Down Arrow` | Move the window selection |
 | `k` / `j` | Move the window selection up or down |
 | `Left Arrow` / `Right Arrow` | Move between application tabs |
@@ -163,7 +163,7 @@ rebuilds.
 
 ### The global shortcut does not work
 
-Another application may already own `Command + Control + Up Arrow`. Wingo displays a registration
+Another application may already own `Option + Space`. Wingo displays a registration
 error when macOS refuses the shortcut; close or reconfigure the conflicting application and
 relaunch Wingo.
 
